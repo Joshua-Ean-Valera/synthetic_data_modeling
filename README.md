@@ -155,7 +155,7 @@ This project helps you gain hands-on experience with:
 - Automated HTML report generation
 - CSV export for all data
 
-## 📝 Project Structure
+## Project Structure
 
 ```
 synthetic_data_modeling/
@@ -168,7 +168,7 @@ synthetic_data_modeling/
     └── test_app.py       # Test script backup
 ```
 
-## 🧪 Testing
+##  Testing
 
 Run the comprehensive test suite to verify all functionalities:
 
@@ -189,7 +189,7 @@ The test script covers:
 
 Expected output: All 10 tests should pass with ✓ marks.
 
-## 🚨 Troubleshooting
+##  Troubleshooting
 
 **Issue: Streamlit won't start**
 ```bash
@@ -204,21 +204,21 @@ pip install -r requirements.txt --upgrade
 ```
 
 **Issue: Dark mode not working**
-- Click the "🌓 Toggle Theme" button at the top of the page
+- Click the " Toggle Theme" button at the top of the page
 - Refresh the browser if needed
 
 **Issue: Models not saving**
 - Ensure you have write permissions in the directory
 - Check available disk space
 
-## 👤 Author
+##  Author
 
 Created as part of a modeling and simulation learning project.
--**Group Members**: [Garcia, Asi Neo] [Manaog, Johnlerein B.] [Valera, Joshua Ean]
+- **Group Members**: [Garcia, Asi Neo] [Manaog, Johnlerein B.] [Valera, Joshua Ean]
 - **Repository**: [synthetic_data_modeling](https://github.com/jlrnmng/synthetic_data_modeling)
 - **GitHub**: [@jlrnmng](https://github.com/jlrnmng)
 
-## 📊 Project Statistics
+##  Project Statistics
 
 - **Lines of Code**: ~1,400+
 - **Features**: 15+ major features
@@ -226,7 +226,7 @@ Created as part of a modeling and simulation learning project.
 - **Test Coverage**: 10 comprehensive tests
 - **Visualizations**: 20+ interactive charts and plots
 
-## 🎯 Use Cases
+##  Use Cases
 
 This application is ideal for:
 - **Educational Purposes** - Learn ML concepts interactively
