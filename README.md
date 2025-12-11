@@ -2,7 +2,7 @@
 
 An advanced interactive Streamlit application for exploring modeling and simulation concepts using Python. This project generates synthetic datasets and applies machine learning techniques with comprehensive visualization, analysis, and model management capabilities.
 
-## 🎯 Project Overview
+## Project Overview
 
 This project implements a complete data modeling workflow:
 
@@ -14,7 +14,7 @@ This project implements a complete data modeling workflow:
 6. **Model Management** - Save, load, and deploy models for predictions
 7. **Simulate Outcomes** - Generate predictions and compare with known properties
 
-## ✨ Features
+## Features
 
 ### Core Functionality
 - **Interactive UI** - Easy-to-use Streamlit interface with dark mode support
@@ -51,7 +51,7 @@ This project implements a complete data modeling workflow:
 - **Rich Visualizations** - Interactive Plotly charts and graphs
 - **Simulation Tools** - Generate and compare simulated outcomes
 
-## 🛠️ Technologies
+## Technologies
 
 - **Streamlit** - Interactive web application framework
 - **NumPy** - Numerical computing
@@ -61,7 +61,7 @@ This project implements a complete data modeling workflow:
 - **Plotly** - Interactive 3D and 2D visualizations
 - **SciPy** - Statistical functions and distributions
 
-## 📦 Installation
+## Installation
 
 1. Clone the repository:
 ```bash
@@ -80,7 +80,7 @@ source venv/bin/activate  # On Windows: venv\Scripts\activate
 pip install -r requirements.txt
 ```
 
-## 🚀 Usage
+## Usage
 
 1. Run the Streamlit app:
 ```bash
@@ -105,7 +105,7 @@ streamlit run app.py
    - **Step 5**: Run simulations to test model predictions
    - **Step 6**: Save models, make predictions, track history, export reports
 
-## 📊 Algorithms Available
+## Algorithms Available
 
 ### Regression
 - **Linear Regression** - Fast, interpretable baseline
@@ -119,7 +119,7 @@ streamlit run app.py
 - **Decision Tree** - Interpretable tree-based decisions
 - **Support Vector Machine** - Maximum margin classifier
 
-## 🎓 Learning Objectives
+## Learning Objectives
 
 This project helps you gain hands-on experience with:
 - Synthetic data generation with known properties
@@ -133,7 +133,7 @@ This project helps you gain hands-on experience with:
 - Model persistence and deployment
 - Experiment tracking and reporting
 
-## 📈 Advanced Features
+## Advanced Features
 
 ### Feature Engineering
 - Mathematical transformations (log, exp, sqrt, square)
@@ -160,28 +160,78 @@ This project helps you gain hands-on experience with:
 ```
 synthetic_data_modeling/
 ├── app.py                 # Main Streamlit application
+├── test_app.py           # Comprehensive test suite
 ├── requirements.txt       # Python dependencies
 ├── project_details.txt    # Project specifications
-└── README.md             # This file
+├── README.md             # This file
+└── script/               # Additional scripts
+    └── test_app.py       # Test script backup
 ```
 
-## 🤝 Contributing
+## 🧪 Testing
 
-Contributions are welcome! Feel free to:
-- Report bugs
-- Suggest new features
-- Submit pull requests
+Run the comprehensive test suite to verify all functionalities:
 
-## 📄 License
+```bash
+python test_app.py
+```
 
-This project is open source and available for educational purposes.
+The test script covers:
+- Data generation (regression & classification)
+- Feature engineering transformations
+- Feature selection methods (SelectKBest, RFE)
+- Dimensionality reduction (PCA)
+- All 5 ML algorithms for both problem types
+- Model persistence (save/load)
+- Custom naming functionality
+- Statistical analysis
+- Prediction interface
+
+Expected output: All 10 tests should pass with ✓ marks.
+
+## 🚨 Troubleshooting
+
+**Issue: Streamlit won't start**
+```bash
+# Try using python.exe explicitly
+python.exe -m streamlit run app.py
+```
+
+**Issue: Missing dependencies**
+```bash
+# Reinstall all requirements
+pip install -r requirements.txt --upgrade
+```
+
+**Issue: Dark mode not working**
+- Click the "🌓 Toggle Theme" button at the top of the page
+- Refresh the browser if needed
+
+**Issue: Models not saving**
+- Ensure you have write permissions in the directory
+- Check available disk space
 
 ## 👤 Author
 
 Created as part of a modeling and simulation learning project.
+-**Group Members**: [Garcia, Asi Neo] [Manaog, Johnlerein B.] [Valera, Joshua Ean]
+- **Repository**: [synthetic_data_modeling](https://github.com/jlrnmng/synthetic_data_modeling)
+- **GitHub**: [@jlrnmng](https://github.com/jlrnmng)
 
-## 🙏 Acknowledgments
+## 📊 Project Statistics
 
-- Built with [Streamlit](https://streamlit.io/)
-- Powered by [Scikit-learn](https://scikit-learn.org/)
-- Visualizations by [Plotly](https://plotly.com/)
+- **Lines of Code**: ~1,400+
+- **Features**: 15+ major features
+- **Algorithms**: 5 ML algorithms (Linear/Logistic Regression, Random Forest, Decision Tree, SVM)
+- **Test Coverage**: 10 comprehensive tests
+- **Visualizations**: 20+ interactive charts and plots
+
+## 🎯 Use Cases
+
+This application is ideal for:
+- **Educational Purposes** - Learn ML concepts interactively
+- **Data Science Projects** - Quick prototyping and experimentation
+- **Model Comparison** - Test different algorithms on synthetic data
+- **Feature Engineering Studies** - Explore transformation effects
+- **Finals Projects** - Comprehensive ML platform demonstration
+- **Research** - Generate controlled datasets for testing hypotheses

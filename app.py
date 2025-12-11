@@ -24,7 +24,7 @@ from datetime import datetime
 import json
 
 # Set page config
-st.set_page_config(page_title="Synthetic Data Modeling", layout="wide", page_icon="📊")
+st.set_page_config(page_title="Synthetic Data Modeling", layout="wide")
 
 # Initialize session state for dark mode
 if 'dark_mode' not in st.session_state:
@@ -69,19 +69,19 @@ else:
     """, unsafe_allow_html=True)
 
 # Title
-st.markdown('<h1 class="main-header">📊 Synthetic Data Modeling & Simulation</h1>', unsafe_allow_html=True)
+st.markdown('<h1 class="main-header">Synthetic Data Modeling & Simulation</h1>', unsafe_allow_html=True)
 
 # Dark mode toggle
 col1, col2, col3 = st.columns([1, 1, 8])
 with col2:
-    if st.button("🌓 Toggle Theme"):
+    if st.button("Toggle Theme"):
         st.session_state.dark_mode = not st.session_state.dark_mode
         st.rerun()
 
 st.markdown("---")
 
 # Sidebar for configuration
-st.sidebar.header("⚙️ Configuration")
+st.sidebar.header("Configuration")
 model_type = st.sidebar.selectbox(
     "Select Model Type",
     ["Regression", "Classification"]
@@ -126,7 +126,7 @@ if use_custom_names:
     )
 
 # Generate Data Button
-generate_data = st.sidebar.button("🎲 Generate Data", type="primary")
+generate_data = st.sidebar.button("Generate Data", type="primary")
 
 # Initialize session state
 if 'data_generated' not in st.session_state:
@@ -205,7 +205,7 @@ if generate_data or st.session_state.data_generated:
     with col3:
         st.metric("Problem Type", problem_type)
     
-    st.success(f"✅ Data generated successfully: **{st.session_state.dataset_title}**")
+    st.success(f"Data generated successfully: **{st.session_state.dataset_title}**")
     
     # Download button for generated data
     col_download1, col_download2 = st.columns([3, 1])
@@ -214,20 +214,20 @@ if generate_data or st.session_state.data_generated:
         # Use custom dataset name for file if provided
         file_name = st.session_state.dataset_title.lower().replace(' ', '_') if use_custom_names else f'synthetic_data_{problem_type.lower()}_{n_samples}samples'
         st.download_button(
-            label="📥 Download CSV",
+            label="Download CSV",
             data=csv,
             file_name=f'{file_name}.csv',
             mime='text/csv',
             help="Download the generated dataset as CSV"
         )
     
-    with st.expander("📋 View Dataset Sample"):
+    with st.expander("View Dataset Sample"):
         st.dataframe(st.session_state.df.head(20), use_container_width=True)
     
     # Step 2: Exploratory Data Analysis (EDA)
     st.markdown('<h2 class="sub-header">2️⃣ Exploratory Data Analysis (EDA)</h2>', unsafe_allow_html=True)
     
-    tab1, tab2, tab3, tab4 = st.tabs(["📊 Statistical Summary", "📈 Distributions", "🔗 Correlations", "🎯 Target Analysis"])
+    tab1, tab2, tab3, tab4 = st.tabs(["Statistical Summary", "Distributions", "Correlations", "Target Analysis"])
     
     with tab1:
         st.subheader("Statistical Summary")
@@ -300,7 +300,7 @@ if generate_data or st.session_state.data_generated:
     # Step 2.5: Advanced Feature Engineering & Analysis
     st.markdown('<h2 class="sub-header">2.5️⃣ Advanced Feature Engineering & Analysis</h2>', unsafe_allow_html=True)
     
-    fe_tabs = st.tabs(["🔧 Feature Transforms", "🎯 Feature Selection", "📉 Dimensionality Reduction", "🔍 3D Visualization"])
+    fe_tabs = st.tabs(["Feature Transforms", "Feature Selection", "Dimensionality Reduction", "3D Visualization"])
     
     with fe_tabs[0]:
         st.subheader("Feature Transformations")
@@ -331,7 +331,7 @@ if generate_data or st.session_state.data_generated:
                         df_transformed[f"{feature}_sq"] = df_transformed[feature] ** 2
                 
                 st.session_state.df_transformed = df_transformed
-                st.success(f"✅ Applied {transform_type} transformation to {len(transform_features)} features")
+                st.success(f"Applied {transform_type} transformation to {len(transform_features)} features")
                 st.dataframe(df_transformed.head(), use_container_width=True)
     
     with fe_tabs[1]:
@@ -430,7 +430,7 @@ if generate_data or st.session_state.data_generated:
                                    title='PCA: First Two Components')
                     st.plotly_chart(fig, use_container_width=True)
                 
-                st.info(f"✨ Total variance explained by {n_components} components: {cumulative_var[-1]*100:.2f}%")
+                st.info(f"Total variance explained by {n_components} components: {cumulative_var[-1]*100:.2f}%")
     
     with fe_tabs[3]:
         st.subheader("3D Feature Relationships")
@@ -480,7 +480,7 @@ if generate_data or st.session_state.data_generated:
     with col2:
         scale_features = st.checkbox("Scale Features", value=True)
     
-    train_model = st.button("🚀 Train Model", type="primary")
+    train_model = st.button("Train Model", type="primary")
     
     if train_model or st.session_state.model_trained:
         st.session_state.model_trained = True
@@ -546,7 +546,7 @@ if generate_data or st.session_state.data_generated:
                 st.session_state.y_pred_train = y_pred_train
                 st.session_state.y_pred_test = y_pred_test
         
-        st.success(f"✅ Model trained successfully using {st.session_state.algorithm}!")
+        st.success(f"Model trained successfully using {st.session_state.algorithm}!")
         
         # Step 4: Model Evaluation
         st.markdown('<h2 class="sub-header">4️⃣ Model Evaluation</h2>', unsafe_allow_html=True)
@@ -639,9 +639,9 @@ if generate_data or st.session_state.data_generated:
             
             # Advanced Regression Visualizations
             st.markdown("---")
-            st.subheader("📊 Advanced Analysis")
+            st.subheader("Advanced Analysis")
             
-            adv_tabs = st.tabs(["📉 Residual Plots", "📈 Learning Curves", "🎯 Feature Importance"])
+            adv_tabs = st.tabs(["Residual Plots", "Learning Curves", "Feature Importance"])
             
             with adv_tabs[0]:
                 col1, col2 = st.columns(2)
@@ -726,7 +726,7 @@ if generate_data or st.session_state.data_generated:
                     )
                     st.plotly_chart(fig, use_container_width=True)
                     
-                    st.info("📊 Learning curves show how model performance changes with training set size. Converging lines suggest the model is well-tuned.")
+                    st.info("Learning curves show how model performance changes with training set size. Converging lines suggest the model is well-tuned.")
             
             with adv_tabs[2]:
                 # Feature Importance
@@ -750,17 +750,7 @@ if generate_data or st.session_state.data_generated:
                     st.plotly_chart(fig, use_container_width=True)
                 else:
                     st.info("Feature importance not available for this model type")
-            
-            # Remove old feature importance section
-            # st.subheader("Feature Coefficients")
-            # coef_df = pd.DataFrame({
-            #     'Feature': st.session_state.feature_names,
-            #     'Coefficient': st.session_state.model.coef_
-            # }).sort_values('Coefficient', key=abs, ascending=False)
-            
-            # fig = px.bar(coef_df, x='Feature', y='Coefficient',
-            #             title="Feature Importance (Coefficients)")
-            # st.plotly_chart(fig, use_container_width=True)
+        
             
         else:  # Classification
             # Metrics
@@ -799,9 +789,9 @@ if generate_data or st.session_state.data_generated:
             
             # Advanced Classification Visualizations
             st.markdown("---")
-            st.subheader("📊 Advanced Analysis")
+            st.subheader("Advanced Analysis")
             
-            class_tabs = st.tabs(["📉 ROC Curves", "📈 Learning Curves", "🎯 Feature Importance", "🔥 Enhanced Confusion Matrix"])
+            class_tabs = st.tabs(["ROC Curves", "Learning Curves", "Feature Importance", "Enhanced Confusion Matrix"])
             
             with class_tabs[0]:
                 # ROC Curves (for binary and multiclass)
@@ -916,7 +906,7 @@ if generate_data or st.session_state.data_generated:
                     )
                     st.plotly_chart(fig, use_container_width=True)
                     
-                    st.info("📊 Learning curves show model performance vs training size. Converging lines indicate good generalization.")
+                    st.info("Learning curves show model performance vs training size. Converging lines indicate good generalization.")
             
             with class_tabs[2]:
                 # Feature Importance
@@ -1024,7 +1014,7 @@ if generate_data or st.session_state.data_generated:
                 # Predict
                 y_sim_pred = st.session_state.model.predict(X_sim_scaled)
                 
-                st.success(f"✅ Generated {n_simulations} simulated predictions!")
+                st.success(f"Generated {n_simulations} simulated predictions!")
                 
                 # Compare distributions
                 col1, col2 = st.columns(2)
@@ -1064,7 +1054,7 @@ if generate_data or st.session_state.data_generated:
         # Step 6: Model Management & Deployment
         st.markdown('<h2 class="sub-header">6️⃣ Model Management & Deployment</h2>', unsafe_allow_html=True)
         
-        mgmt_tabs = st.tabs(["💾 Save/Load Model", "🎯 Make Predictions", "📊 Session History", "📄 Export Report"])
+        mgmt_tabs = st.tabs(["Save/Load Model", "Make Predictions", "Session History", "Export Report"])
         
         with mgmt_tabs[0]:
             st.subheader("Model Persistence")
@@ -1075,7 +1065,7 @@ if generate_data or st.session_state.data_generated:
                 st.write("**Save Current Model**")
                 model_name = st.text_input("Model Name", value=f"{algorithm.replace(' ', '_')}_{problem_type}")
                 
-                if st.button("💾 Save Model"):
+                if st.button("Save Model"):
                     # Create model package
                     model_package = {
                         'model': st.session_state.model,
@@ -1090,12 +1080,12 @@ if generate_data or st.session_state.data_generated:
                     model_bytes = pickle.dumps(model_package)
                     
                     st.download_button(
-                        label="📥 Download Model File",
+                        label="Download Model File",
                         data=model_bytes,
                         file_name=f"{model_name}.pkl",
                         mime="application/octet-stream"
                     )
-                    st.success("✅ Model ready for download!")
+                    st.success("Model ready for download!")
             
             with col2:
                 st.write("**Load Saved Model**")
@@ -1108,7 +1098,7 @@ if generate_data or st.session_state.data_generated:
                         st.session_state.scaler = model_package['scaler']
                         st.session_state.feature_names = model_package['feature_names']
                         
-                        st.success(f"✅ Loaded model: {model_package['algorithm']}")
+                        st.success(f"Loaded model: {model_package['algorithm']}")
                         st.info(f"Problem Type: {model_package['problem_type']}")
                         st.info(f"Saved: {model_package['timestamp']}")
                     except Exception as e:
@@ -1131,7 +1121,7 @@ if generate_data or st.session_state.data_generated:
                         key=f"pred_{feature}"
                     )
             
-            if st.button("🎯 Predict"):
+            if st.button("Predict"):
                 # Prepare input
                 X_pred = np.array([list(input_data.values())])
                 
@@ -1159,7 +1149,7 @@ if generate_data or st.session_state.data_generated:
             st.subheader("Experiment History")
             
             # Save current experiment
-            if st.button("💾 Save Current Experiment"):
+            if st.button("Save Current Experiment"):
                 st.session_state.experiment_counter += 1
                 experiment = {
                     'id': st.session_state.experiment_counter,
@@ -1183,7 +1173,7 @@ if generate_data or st.session_state.data_generated:
                     })
                 
                 st.session_state.experiment_history.append(experiment)
-                st.success(f"✅ Experiment #{st.session_state.experiment_counter} saved!")
+                st.success(f"Experiment #{st.session_state.experiment_counter} saved!")
             
             # Display history
             if st.session_state.experiment_history:
@@ -1193,7 +1183,7 @@ if generate_data or st.session_state.data_generated:
                 # Download history
                 csv = history_df.to_csv(index=False).encode('utf-8')
                 st.download_button(
-                    label="📥 Download History CSV",
+                    label="Download History CSV",
                     data=csv,
                     file_name=f"experiment_history_{datetime.now().strftime('%Y%m%d_%H%M%S')}.csv",
                     mime="text/csv"
@@ -1204,7 +1194,7 @@ if generate_data or st.session_state.data_generated:
         with mgmt_tabs[3]:
             st.subheader("Export Analysis Report")
             
-            if st.button("📄 Generate HTML Report"):
+            if st.button("Generate HTML Report"):
                 # Create HTML report
                 html_report = f"""
                 <html>
@@ -1221,7 +1211,7 @@ if generate_data or st.session_state.data_generated:
                     </style>
                 </head>
                 <body>
-                    <h1>📊 Synthetic Data Modeling Report</h1>
+                    <h1>Synthetic Data Modeling Report</h1>
                     <p><strong>Generated:</strong> {datetime.now().strftime("%Y-%m-%d %H:%M:%S")}</p>
                     
                     <h2>Dataset Information</h2>
@@ -1275,19 +1265,19 @@ if generate_data or st.session_state.data_generated:
                 """
                 
                 st.download_button(
-                    label="📥 Download HTML Report",
+                    label="Download HTML Report",
                     data=html_report,
                     file_name=f"model_report_{datetime.now().strftime('%Y%m%d_%H%M%S')}.html",
                     mime="text/html"
                 )
-                st.success("✅ Report generated! Click button above to download.")
+                st.success("Report generated! Click button above to download.")
 
 else:
     # Welcome screen
-    st.info("👈 Configure your synthetic dataset in the sidebar and click **Generate Data** to begin!")
+    st.info("Configure your synthetic dataset in the sidebar and click **Generate Data** to begin!")
     
     st.markdown("""
-    ## 🎯 Project Overview
+    ## Project Overview
     
     This application implements a complete **Synthetic Data Modeling & Simulation** workflow:
     
@@ -1297,14 +1287,14 @@ else:
     4. **Evaluate Performance** - Assess model accuracy and fit
     5. **Simulate Outcomes** - Generate predictions and compare with known properties
     
-    ### 📚 Features
+    ### Features
     - **Regression & Classification** support
     - Interactive visualizations with Plotly
     - Comprehensive statistical analysis
     - Real-time model training and evaluation
     - Simulation and comparison tools
     
-    ### 🛠️ Technologies
+    ### Technologies
     - **Streamlit** for interactive UI
     - **Scikit-learn** for modeling
     - **Pandas & NumPy** for data manipulation
