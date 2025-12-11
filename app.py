@@ -6,7 +6,10 @@ import seaborn as sns
 from sklearn.datasets import make_regression, make_classification
 from sklearn.model_selection import train_test_split
 from sklearn.linear_model import LinearRegression, LogisticRegression
-from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, classification_report, confusion_matrix
+from sklearn.ensemble import RandomForestRegressor, RandomForestClassifier
+from sklearn.tree import DecisionTreeRegressor, DecisionTreeClassifier
+from sklearn.svm import SVR, SVC
+from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, classification_report, confusion_matrix, mean_absolute_error
 from sklearn.preprocessing import StandardScaler
 import plotly.express as px
 import plotly.graph_objects as go
@@ -41,6 +44,18 @@ model_type = st.sidebar.selectbox(
     "Select Model Type",
     ["Regression", "Classification"]
 )
+
+# Algorithm selection
+if model_type == "Regression":
+    algorithm = st.sidebar.selectbox(
+        "Select Algorithm",
+        ["Linear Regression", "Random Forest", "Decision Tree", "Support Vector Machine"]
+    )
+else:
+    algorithm = st.sidebar.selectbox(
+        "Select Algorithm",
+        ["Logistic Regression", "Random Forest", "Decision Tree", "Support Vector Machine"]
+    )
 
 # Dataset parameters
 st.sidebar.subheader("Dataset Parameters")
@@ -110,6 +125,18 @@ if generate_data or st.session_state.data_generated:
         st.metric("Problem Type", problem_type)
     
     st.success("✅ Data generated successfully!")
+    
+    # Download button for generated data
+    col_download1, col_download2 = st.columns([3, 1])
+    with col_download2:
+        csv = st.session_state.df.to_csv(index=False).encode('utf-8')
+        st.download_button(
+            label="📥 Download CSV",
+            data=csv,
+            file_name=f'synthetic_data_{problem_type.lower()}_{n_samples}samples.csv',
+            mime='text/csv',
+            help="Download the generated dataset as CSV"
+        )
     
     with st.expander("📋 View Dataset Sample"):
         st.dataframe(st.session_state.df.head(20), use_container_width=True)
@@ -217,12 +244,21 @@ if generate_data or st.session_state.data_generated:
             
             # Train model
             if problem_type == "Regression":
-                model = LinearRegression()
+                if algorithm == "Linear Regression":
+                    model = LinearRegression()
+                elif algorithm == "Random Forest":
+                    model = RandomForestRegressor(n_estimators=100, random_state=random_state)
+                elif algorithm == "Decision Tree":
+                    model = DecisionTreeRegressor(random_state=random_state)
+                elif algorithm == "Support Vector Machine":
+                    model = SVR(kernel='rbf')
+                
                 model.fit(X_train, y_train)
                 y_pred_train = model.predict(X_train)
                 y_pred_test = model.predict(X_test)
                 
                 st.session_state.model = model
+                st.session_state.algorithm = algorithm
                 st.session_state.X_train = X_train
                 st.session_state.X_test = X_test
                 st.session_state.y_train = y_train
@@ -230,12 +266,21 @@ if generate_data or st.session_state.data_generated:
                 st.session_state.y_pred_train = y_pred_train
                 st.session_state.y_pred_test = y_pred_test
             else:
-                model = LogisticRegression(max_iter=1000, random_state=random_state)
+                if algorithm == "Logistic Regression":
+                    model = LogisticRegression(max_iter=1000, random_state=random_state)
+                elif algorithm == "Random Forest":
+                    model = RandomForestClassifier(n_estimators=100, random_state=random_state)
+                elif algorithm == "Decision Tree":
+                    model = DecisionTreeClassifier(random_state=random_state)
+                elif algorithm == "Support Vector Machine":
+                    model = SVC(kernel='rbf', random_state=random_state)
+                
                 model.fit(X_train, y_train)
                 y_pred_train = model.predict(X_train)
                 y_pred_test = model.predict(X_test)
                 
                 st.session_state.model = model
+                st.session_state.algorithm = algorithm
                 st.session_state.X_train = X_train
                 st.session_state.X_test = X_test
                 st.session_state.y_train = y_train
@@ -243,26 +288,30 @@ if generate_data or st.session_state.data_generated:
                 st.session_state.y_pred_train = y_pred_train
                 st.session_state.y_pred_test = y_pred_test
         
-        st.success("✅ Model trained successfully!")
+        st.success(f"✅ Model trained successfully using {st.session_state.algorithm}!")
         
         # Step 4: Model Evaluation
         st.markdown('<h2 class="sub-header">4️⃣ Model Evaluation</h2>', unsafe_allow_html=True)
+        st.info(f"**Algorithm Used:** {st.session_state.algorithm}")
         
         if problem_type == "Regression":
             # Metrics
             train_mse = mean_squared_error(st.session_state.y_train, st.session_state.y_pred_train)
             test_mse = mean_squared_error(st.session_state.y_test, st.session_state.y_pred_test)
+            train_mae = mean_absolute_error(st.session_state.y_train, st.session_state.y_pred_train)
+            test_mae = mean_absolute_error(st.session_state.y_test, st.session_state.y_pred_test)
             train_r2 = r2_score(st.session_state.y_train, st.session_state.y_pred_train)
             test_r2 = r2_score(st.session_state.y_test, st.session_state.y_pred_test)
             
-            col1, col2, col3, col4 = st.columns(4)
+            col1, col2, col3 = st.columns(3)
             with col1:
                 st.metric("Train MSE", f"{train_mse:.2f}")
-            with col2:
                 st.metric("Test MSE", f"{test_mse:.2f}")
+            with col2:
+                st.metric("Train MAE", f"{train_mae:.2f}")
+                st.metric("Test MAE", f"{test_mae:.2f}")
             with col3:
                 st.metric("Train R²", f"{train_r2:.4f}")
-            with col4:
                 st.metric("Test R²", f"{test_r2:.4f}")
             
             # Prediction plots
