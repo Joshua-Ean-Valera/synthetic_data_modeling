@@ -72,11 +72,7 @@ else:
 st.markdown('<h1 class="main-header">Synthetic Data Modeling & Simulation</h1>', unsafe_allow_html=True)
 
 # Dark mode toggle
-col1, col2, col3 = st.columns([1, 1, 8])
-with col2:
-    if st.button("Toggle Theme"):
-        st.session_state.dark_mode = not st.session_state.dark_mode
-        st.rerun()
+# Theme toggle removed per project preference
 
 st.markdown("---")
 
