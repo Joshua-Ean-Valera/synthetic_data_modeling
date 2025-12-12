@@ -105,6 +105,10 @@ random_state = st.sidebar.number_input("Random State", 0, 1000, 42)
 if model_type == "Classification":
     n_classes = st.sidebar.slider("Number of Classes", 2, 5, 2, 1)
     n_informative = st.sidebar.slider("Informative Features", 2, n_features, min(3, n_features), 1)
+else:
+    # Defaults when regression is selected (app still generates classification dataset)
+    n_classes = 2
+    n_informative = min(3, n_features)
 
 # Custom naming options
 st.sidebar.subheader("Naming Options")
@@ -267,6 +271,42 @@ if generate_data or st.session_state.data_generated:
         with col2:
             st.write("**Negative Correlations:**")
             st.dataframe(target_corr.tail(5))
+
+        # Quick predictability report (classification only)
+        if st.session_state.problem_type == "Classification":
+            st.markdown("**Quick Predictability Report (baseline Logistic Regression, 5-fold CV)**")
+            try:
+                from sklearn.model_selection import cross_val_score
+                from sklearn.linear_model import LogisticRegression
+
+                # Use numeric X,y prepared earlier in session state
+                X_cv = st.session_state.X
+                y_cv = st.session_state.y
+
+                clf = LogisticRegression(max_iter=500)
+                acc = cross_val_score(clf, X_cv, y_cv, cv=5, scoring='accuracy').mean()
+                prec = cross_val_score(clf, X_cv, y_cv, cv=5, scoring='precision').mean()
+                rec = cross_val_score(clf, X_cv, y_cv, cv=5, scoring='recall').mean()
+                f1 = cross_val_score(clf, X_cv, y_cv, cv=5, scoring='f1').mean()
+
+                col_a, col_b, col_c, col_d = st.columns(4)
+                with col_a:
+                    st.metric("CV Accuracy", f"{acc:.3f}")
+                with col_b:
+                    st.metric("CV Precision", f"{prec:.3f}")
+                with col_c:
+                    st.metric("CV Recall", f"{rec:.3f}")
+                with col_d:
+                    st.metric("CV F1", f"{f1:.3f}")
+
+                # ROC AUC if possible
+                try:
+                    auc_score = cross_val_score(clf, X_cv, y_cv, cv=5, scoring='roc_auc').mean()
+                    st.metric("CV ROC AUC", f"{auc_score:.3f}")
+                except Exception:
+                    pass
+            except Exception as e:
+                st.warning(f"Quick predictability report unavailable: {e}")
     
     with tab4:
         st.subheader(f"{st.session_state.target_col} Variable Analysis")
@@ -522,6 +562,14 @@ if generate_data or st.session_state.data_generated:
                 st.session_state.scaler = scaler
             
             # Train model
+            # Ensure selected algorithm matches problem type; fall back to sensible defaults
+            if problem_type == "Classification" and algorithm not in ["Logistic Regression", "Random Forest", "Decision Tree", "Support Vector Machine"]:
+                st.warning("Selected algorithm is incompatible with classification target; defaulting to Logistic Regression.")
+                algorithm = "Logistic Regression"
+            if problem_type == "Regression" and algorithm not in ["Linear Regression", "Random Forest", "Decision Tree", "Support Vector Machine"]:
+                st.warning("Selected algorithm is incompatible with regression target; defaulting to Linear Regression.")
+                algorithm = "Linear Regression"
+
             if problem_type == "Regression":
                 if algorithm == "Linear Regression":
                     model = LinearRegression()

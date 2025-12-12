@@ -22,6 +22,12 @@ This project implements a complete data modeling workflow:
 - **Multiple Algorithms** - Linear/Logistic Regression, Random Forest, Decision Tree, SVM
 - **Custom Naming** - Name your datasets, features, and target variables
 
+Note: The app now generates weather-like datasets by default. The minimal/base schema (used for modeling) includes these core fields:
+
+- `Location`, `MinTemp`, `MaxTemp`, `Rainfall`, `RainTomorrow` (target: 0/1)
+
+Full generated data also includes `Temp9am`, `Temp3pm`, `Humidity9am`, `Humidity3pm`, `WindSpeed9am`, `WindSpeed3pm`, and `RainToday`.
+
 ### Data Analysis
 ### Data Analysis
 - **Comprehensive EDA** - Statistical summaries, distributions, correlations, and target analysis
@@ -205,8 +211,7 @@ pip install -r requirements.txt --upgrade
 ```
 
 **Issue: Dark mode not working**
-- Click the " Toggle Theme" button at the top of the page
-- Refresh the browser if needed
+Dark-mode toggle was removed; theme is controlled by the app's CSS. Refresh the browser if needed.
 
 **Issue: Models not saving**
 - Ensure you have write permissions in the directory
