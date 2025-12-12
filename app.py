@@ -81,19 +81,22 @@ st.markdown("---")
 st.sidebar.header("Configuration")
 model_type = st.sidebar.selectbox(
     "Select Model Type",
-    ["Regression", "Classification"]
+    ["Classification", "Regression"],
+    index=0
 )
 
 # Algorithm selection
 if model_type == "Regression":
     algorithm = st.sidebar.selectbox(
         "Select Algorithm",
-        ["Linear Regression", "Random Forest", "Decision Tree", "Support Vector Machine"]
+        ["Linear Regression", "Random Forest", "Decision Tree", "Support Vector Machine"],
+        index=3  # default to Support Vector Machine for regression
     )
 else:
     algorithm = st.sidebar.selectbox(
         "Select Algorithm",
-        ["Logistic Regression", "Random Forest", "Decision Tree", "Support Vector Machine"]
+        ["Logistic Regression", "Random Forest", "Decision Tree", "Support Vector Machine"],
+        index=0  # default to Logistic Regression for classification
     )
 
 # Dataset parameters
