@@ -23,11 +23,12 @@ This project implements a complete data modeling workflow:
 - **Custom Naming** - Name your datasets, features, and target variables
 
 ### Data Analysis
+### Data Analysis
 - **Comprehensive EDA** - Statistical summaries, distributions, correlations, and target analysis
-- **3D Visualizations** - Interactive 3D scatter plots for feature relationships
+- **Visualizations** - 2D and 3D interactive scatter plots for feature relationships
 - **Feature Engineering** - Logarithmic, exponential, square root, and polynomial transforms
 - **Feature Selection** - SelectKBest and Recursive Feature Elimination (RFE)
-- **Dimensionality Reduction** - PCA with explained variance visualization
+   - **Step 2.5**: Apply feature engineering, selection, PCA, and visualizations (2D & 3D)
 
 ### Model Training & Evaluation
 - **5 ML Algorithms** - Choose from multiple regression and classification models
@@ -99,7 +100,7 @@ streamlit run app.py
 4. Explore the comprehensive workflow:
    - **Step 1**: View dataset samples and download CSV
    - **Step 2**: Analyze distributions, correlations, and target variables
-   - **Step 2.5**: Apply feature engineering, selection, PCA, and 3D visualization
+   - **Step 2.5**: Apply feature engineering, selection, PCA, and visualizations (2D & 3D)
    - **Step 3**: Train your model with chosen algorithm
    - **Step 4**: Evaluate with advanced metrics and visualizations
    - **Step 5**: Run simulations to test model predictions

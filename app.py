@@ -296,7 +296,7 @@ if generate_data or st.session_state.data_generated:
     # Step 2.5: Advanced Feature Engineering & Analysis
     st.markdown('<h2 class="sub-header">2.5️⃣ Advanced Feature Engineering & Analysis</h2>', unsafe_allow_html=True)
     
-    fe_tabs = st.tabs(["Feature Transforms", "Feature Selection", "Dimensionality Reduction", "3D Visualization"])
+    fe_tabs = st.tabs(["Feature Transforms", "Feature Selection", "Dimensionality Reduction", "Visualizations"])
     
     with fe_tabs[0]:
         st.subheader("Feature Transformations")
@@ -429,17 +429,42 @@ if generate_data or st.session_state.data_generated:
                 st.info(f"Total variance explained by {n_components} components: {cumulative_var[-1]*100:.2f}%")
     
     with fe_tabs[3]:
-        st.subheader("3D Feature Relationships")
-        
+        st.subheader("Visualizations")
+
+        # 2D Visualization
+        st.write("**2D Feature Relationships**")
+        if n_features >= 2:
+            col1, col2 = st.columns(2)
+            with col1:
+                x_feature_2d = st.selectbox("X-axis (2D)", st.session_state.feature_names, index=0, key='x2d')
+            with col2:
+                y_feature_2d = st.selectbox("Y-axis (2D)", st.session_state.feature_names, index=1, key='y2d')
+
+            fig2d = px.scatter(
+                st.session_state.df,
+                x=x_feature_2d,
+                y=y_feature_2d,
+                color=st.session_state.target_col if st.session_state.target_col in st.session_state.df.columns else None,
+                title=f"2D Scatter: {x_feature_2d} vs {y_feature_2d}",
+                opacity=0.8
+            )
+            st.plotly_chart(fig2d, use_container_width=True)
+        else:
+            st.warning("Need at least 2 features for 2D visualization")
+
+        st.markdown("---")
+
+        # 3D Visualization
+        st.write("**3D Feature Relationships**")
         if n_features >= 3:
             col1, col2, col3 = st.columns(3)
             with col1:
-                x_feature = st.selectbox("X-axis", st.session_state.feature_names, index=0)
+                x_feature = st.selectbox("X-axis (3D)", st.session_state.feature_names, index=0, key='x3d')
             with col2:
-                y_feature = st.selectbox("Y-axis", st.session_state.feature_names, index=1)
+                y_feature = st.selectbox("Y-axis (3D)", st.session_state.feature_names, index=1, key='y3d')
             with col3:
-                z_feature = st.selectbox("Z-axis", st.session_state.feature_names, index=min(2, n_features-1))
-            
+                z_feature = st.selectbox("Z-axis (3D)", st.session_state.feature_names, index=min(2, n_features-1), key='z3d')
+
             fig = go.Figure(data=[go.Scatter3d(
                 x=st.session_state.df[x_feature],
                 y=st.session_state.df[y_feature],
@@ -453,7 +478,7 @@ if generate_data or st.session_state.data_generated:
                     colorbar=dict(title="Target")
                 )
             )])
-            
+
             fig.update_layout(
                 title='3D Feature Space Visualization',
                 scene=dict(
