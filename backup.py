@@ -347,13 +347,143 @@ if generate_data or st.session_state.data_generated:
                 st.metric("Min", f"{st.session_state.y.min():.2f}")
                 st.metric("Max", f"{st.session_state.y.max():.2f}")
     
-    # Step 2.5: Visualizations (removed feature transforms/selection/PCA for simplicity)
-    st.markdown('<h2 class="sub-header">2.5️⃣ Visualizations & Quick Analysis</h2>', unsafe_allow_html=True)
-    fe_tabs = st.tabs(["Visualizations"])
-
+    # Step 2.5: Advanced Feature Engineering & Analysis
+    st.markdown('<h2 class="sub-header">2.5️⃣ Advanced Feature Engineering & Analysis</h2>', unsafe_allow_html=True)
+    
+    fe_tabs = st.tabs(["Feature Transforms", "Feature Selection", "Dimensionality Reduction", "Visualizations"])
+    
     with fe_tabs[0]:
+        st.subheader("Feature Transformations")
+        st.write("Apply mathematical transformations to features")
+        
+        transform_type = st.selectbox(
+            "Select Transformation",
+            ["None", "Logarithmic (log1p)", "Exponential", "Square Root", "Square"]
+        )
+        
+        if transform_type != "None":
+            transform_features = st.multiselect(
+                "Select features to transform",
+                st.session_state.feature_names,
+                default=[]
+            )
+            
+            if transform_features and st.button("Apply Transformation"):
+                df_transformed = st.session_state.df.copy()
+                for feature in transform_features:
+                    if transform_type == "Logarithmic (log1p)":
+                        df_transformed[f"{feature}_log"] = np.log1p(df_transformed[feature] - df_transformed[feature].min() + 1)
+                    elif transform_type == "Exponential":
+                        df_transformed[f"{feature}_exp"] = np.exp(df_transformed[feature])
+                    elif transform_type == "Square Root":
+                        df_transformed[f"{feature}_sqrt"] = np.sqrt(df_transformed[feature] - df_transformed[feature].min())
+                    elif transform_type == "Square":
+                        df_transformed[f"{feature}_sq"] = df_transformed[feature] ** 2
+                
+                st.session_state.df_transformed = df_transformed
+                st.success(f"Applied {transform_type} transformation to {len(transform_features)} features")
+                st.dataframe(df_transformed.head(), use_container_width=True)
+    
+    with fe_tabs[1]:
+        st.subheader("Automated Feature Selection")
+        
+        selection_method = st.radio(
+            "Select Method",
+            ["SelectKBest", "Recursive Feature Elimination (RFE)"]
+        )
+        
+        k_features = st.slider("Number of features to select", 1, n_features, min(5, n_features))
+        
+        if st.button("Run Feature Selection"):
+            with st.spinner("Selecting features..."):
+                if selection_method == "SelectKBest":
+                    if problem_type == "Classification":
+                        selector = SelectKBest(f_classif, k=k_features)
+                    else:
+                        selector = SelectKBest(f_regression, k=k_features)
+                    selector.fit(st.session_state.X, st.session_state.y)
+                    scores = selector.scores_
+                    selected_mask = selector.get_support()
+                else:  # RFE
+                    if problem_type == "Classification":
+                        estimator = RandomForestClassifier(n_estimators=50, random_state=random_state)
+                    else:
+                        estimator = RandomForestRegressor(n_estimators=50, random_state=random_state)
+                    selector = RFE(estimator, n_features_to_select=k_features)
+                    selector.fit(st.session_state.X, st.session_state.y)
+                    selected_mask = selector.support_
+                    scores = selector.ranking_
+                
+                # Create results dataframe
+                results_df = pd.DataFrame({
+                    'Feature': st.session_state.feature_names,
+                    'Selected': selected_mask,
+                    'Score/Rank': scores
+                }).sort_values('Score/Rank', ascending=(selection_method == "RFE"))
+                
+                st.dataframe(results_df, use_container_width=True)
+                
+                # Visualization
+                fig = px.bar(results_df, x='Feature', y='Score/Rank', 
+                            color='Selected',
+                            title=f"Feature {selection_method} Results")
+                st.plotly_chart(fig, use_container_width=True)
+                
+                st.session_state.selected_features = [f for f, s in zip(st.session_state.feature_names, selected_mask) if s]
+    
+    with fe_tabs[2]:
+        st.subheader("PCA - Dimensionality Reduction")
+        
+        n_components = st.slider("Number of Components", 2, min(10, n_features), 2)
+        
+        if st.button("Apply PCA"):
+            with st.spinner("Performing PCA..."):
+                pca = PCA(n_components=n_components)
+                X_pca = pca.fit_transform(st.session_state.X)
+                
+                # Explained variance
+                explained_var = pca.explained_variance_ratio_
+                cumulative_var = np.cumsum(explained_var)
+                
+                st.session_state.X_pca = X_pca
+                st.session_state.pca = pca
+                
+                col1, col2 = st.columns(2)
+                
+                with col1:
+                    # Scree plot
+                    fig = go.Figure()
+                    fig.add_trace(go.Bar(
+                        x=[f'PC{i+1}' for i in range(n_components)],
+                        y=explained_var * 100,
+                        name='Individual'
+                    ))
+                    fig.add_trace(go.Scatter(
+                        x=[f'PC{i+1}' for i in range(n_components)],
+                        y=cumulative_var * 100,
+                        name='Cumulative',
+                        yaxis='y2'
+                    ))
+                    fig.update_layout(
+                        title='Explained Variance by Component',
+                        yaxis=dict(title='Variance Explained (%)'),
+                        yaxis2=dict(title='Cumulative (%)', overlaying='y', side='right')
+                    )
+                    st.plotly_chart(fig, use_container_width=True)
+                
+                with col2:
+                    # PCA scatter plot
+                    pca_df = pd.DataFrame(X_pca[:, :2], columns=['PC1', 'PC2'])
+                    pca_df['Target'] = st.session_state.y
+                    
+                    fig = px.scatter(pca_df, x='PC1', y='PC2', color='Target',
+                                   title='PCA: First Two Components')
+                    st.plotly_chart(fig, use_container_width=True)
+                
+                st.info(f"Total variance explained by {n_components} components: {cumulative_var[-1]*100:.2f}%")
+    
+    with fe_tabs[3]:
         st.subheader("Visualizations")
-        st.info("Feature transforms, automated selection and PCA have been removed for a simplified workflow.")
 
         # 2D Visualization
         st.write("**2D Feature Relationships**")
@@ -435,18 +565,6 @@ if generate_data or st.session_state.data_generated:
         test_size = st.slider("Test Set Size (%)", 10, 50, 20, 5) / 100
     with col2:
         scale_features = st.checkbox("Scale Features", value=True)
-
-    # Regularization options (simplified)
-    reg_penalty = None
-    reg_C = 1.0
-    if algorithm == "Logistic Regression":
-        colr1, colr2 = st.columns(2)
-        with colr1:
-            reg_penalty = st.selectbox("Regularization (Logistic)", ["l2", "l1"], index=0)
-        with colr2:
-            reg_C = st.number_input("Inverse Regularization (C)", min_value=0.0001, max_value=100.0, value=1.0, format="%.4f")
-    elif algorithm == "Support Vector Machine":
-        reg_C = st.number_input("SVM C (regularization)", min_value=0.0001, max_value=100.0, value=1.0, format="%.4f")
     
     train_model = st.button("Train Model", type="primary")
     
@@ -501,18 +619,13 @@ if generate_data or st.session_state.data_generated:
                 st.session_state.y_pred_test = y_pred_test
             else:
                 if algorithm == "Logistic Regression":
-                    # apply chosen regularization
-                    if reg_penalty == 'l1':
-                        solver = 'liblinear'
-                    else:
-                        solver = 'lbfgs'
-                    model = LogisticRegression(max_iter=1000, random_state=random_state, penalty=reg_penalty or 'l2', C=reg_C, solver=solver)
+                    model = LogisticRegression(max_iter=1000, random_state=random_state)
                 elif algorithm == "Random Forest":
                     model = RandomForestClassifier(n_estimators=100, random_state=random_state)
                 elif algorithm == "Decision Tree":
                     model = DecisionTreeClassifier(random_state=random_state)
                 elif algorithm == "Support Vector Machine":
-                    model = SVC(kernel='rbf', C=reg_C if reg_C is not None else 1.0, probability=True, random_state=random_state)
+                    model = SVC(kernel='rbf', random_state=random_state)
                 
                 model.fit(X_train, y_train)
                 y_pred_train = model.predict(X_train)
@@ -968,34 +1081,27 @@ if generate_data or st.session_state.data_generated:
         
         if st.button("🎲 Run Simulation"):
             with st.spinner("Running simulations..."):
-                # Generate new synthetic data using same feature count as the trained model
-                n_sim_features = len(st.session_state.feature_names) if 'feature_names' in st.session_state else n_features
-
+                # Generate new synthetic data
                 if problem_type == "Regression":
                     X_sim, y_sim_actual = make_regression(
                         n_samples=n_simulations,
-                        n_features=n_sim_features,
+                        n_features=n_features,
                         noise=noise,
                         random_state=random_state + 1
                     )
                 else:
-                    n_inf_sim = min(n_informative, n_sim_features)
                     X_sim, y_sim_actual = make_classification(
                         n_samples=n_simulations,
-                        n_features=n_sim_features,
-                        n_informative=n_inf_sim,
+                        n_features=n_features,
+                        n_informative=n_informative,
                         n_classes=n_classes,
                         random_state=random_state + 1,
                         flip_y=noise/100
                     )
-
-                # Scale if needed and possible (only transform when scaler exists)
-                if scale_features and 'scaler' in st.session_state and st.session_state.scaler is not None:
-                    try:
-                        X_sim_scaled = st.session_state.scaler.transform(X_sim)
-                    except Exception:
-                        # Fallback: don't scale if transform fails
-                        X_sim_scaled = X_sim
+                
+                # Scale if needed
+                if scale_features:
+                    X_sim_scaled = st.session_state.scaler.transform(X_sim)
                 else:
                     X_sim_scaled = X_sim
                 

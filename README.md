@@ -22,7 +22,7 @@ This project implements a complete data modeling workflow:
 - **Multiple Algorithms** - Linear/Logistic Regression, Random Forest, Decision Tree, SVM
 - **Custom Naming** - Name your datasets, features, and target variables
 
-Note: The app now generates weather-like datasets by default. The minimal/base schema (used for modeling) includes these core fields:
+Note: The app now generates datasets that mimic common weather features. The minimal/base schema (used for modeling) includes these core fields:
 
 - `Location`, `MinTemp`, `MaxTemp`, `Rainfall`, `RainTomorrow` (target: 0/1)
 
