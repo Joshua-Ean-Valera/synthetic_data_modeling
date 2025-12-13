@@ -1229,8 +1229,25 @@ if generate_data or st.session_state.data_generated:
                             try:
                                 coef_vals = coef[0] if coef.ndim > 1 else coef
                                 coef_df = pd.DataFrame({'Feature': st.session_state.feature_names, 'Coefficient': coef_vals})
-                                st.write('**Model coefficients:**')
-                                st.dataframe(coef_df)
+                                # Display coefficients scaled by 100 (easier human interpretation)
+                                coef_df_display = coef_df.copy()
+                                coef_df_display['Coefficient'] = coef_df_display['Coefficient'] * 100.0
+                                st.write('**Model coefficients (scaled ×100):**')
+                                st.dataframe(coef_df_display.style.format({'Coefficient': '{:.2f}'}))
+                                # Human-readable interpretation for core features (using scaled values)
+                                st.write('**Feature effect interpretation:**')
+                                for _, r in coef_df_display.iterrows():
+                                    fname = r['Feature']
+                                    scaled_c = float(r['Coefficient'])
+                                    if scaled_c > 0:
+                                        st.write(f"- **{fname}**: higher {fname.lower()} increases the model's predicted chance of rain {abs(scaled_c):.2f}.")
+                                    elif scaled_c < 0:
+                                        st.write(f"- **{fname}**: higher {fname.lower()} decreases the model's predicted chance of rain {abs(scaled_c):.2f}.")
+                                    else:
+                                        st.write(f"- **{fname}**: no clear linear effect detected 0.00.")
+
+                                # Short domain explanation for the specific weather-like features
+                                st.markdown("**Domain notes:** Humidity reflects atmospheric moisture — higher humidity generally makes rain more likely.\n\nRainfall (today) indicates active precipitation systems and typically raises next-day rain probability.\n\nTemperature effects (MinTemp / MaxTemp) depend on local conditions; in this dataset higher daytime temperatures tend to slightly reduce rain probability if the coefficient is negative.")
                             except Exception:
                                 pass
                         elif hasattr(st.session_state.model, 'feature_importances_'):
@@ -1238,6 +1255,7 @@ if generate_data or st.session_state.data_generated:
                                 imp_df = pd.DataFrame({'Feature': st.session_state.feature_names, 'Importance': st.session_state.model.feature_importances_})
                                 st.write('**Feature importances:**')
                                 st.dataframe(imp_df.sort_values('Importance', ascending=False))
+                                st.write('**Feature interpretation note:** Importance values are non-directional; higher importance means the feature strongly influences predictions but does not indicate whether higher values increase or decrease rain probability. Use coefficients (linear models) to see direction.')
                             except Exception:
                                 pass
         
