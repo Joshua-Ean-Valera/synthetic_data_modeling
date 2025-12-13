@@ -171,8 +171,30 @@ if generate_data or st.session_state.data_generated:
         RainToday = (Rainfall > 0).astype(int)
 
         # RainTomorrow probability
-        logits = -3 + 0.04 * Humidity3pm + 0.2 * (Rainfall > 0) + 0.01 * (20 - Temp3pm)
-        prob_tom = 1 / (1 + np.exp(-logits))
+        # Automatically find a small intercept shift so overall positive class
+        # prevalence is near the desired level (approx 55%). This avoids adding
+        # any UI controls while producing stable class counts for typical sample
+        # sizes used in the app.
+        desired_pos_frac = 0.55
+
+        base_logits = 0.04 * Humidity3pm + 0.2 * (Rainfall > 0) + 0.01 * (20 - Temp3pm)
+
+        # Binary search for intercept c such that mean(sigmoid(base_logits + c)) ~= desired_pos_frac
+        def sigmoid(x):
+            return 1 / (1 + np.exp(-x))
+
+        lo, hi = -6.0, 6.0
+        for _ in range(40):
+            mid = (lo + hi) / 2.0
+            mean_p = sigmoid(base_logits + mid).mean()
+            if mean_p > desired_pos_frac:
+                hi = mid
+            else:
+                lo = mid
+
+        bias_offset = (lo + hi) / 2.0
+        logits = base_logits + bias_offset
+        prob_tom = sigmoid(logits)
         RainTomorrow = (np.random.rand(n_samples) < prob_tom).astype(int)
 
         df = pd.DataFrame({
@@ -357,8 +379,7 @@ if generate_data or st.session_state.data_generated:
 
     with fe_tabs[0]:
         st.subheader("Visualizations")
-        st.info("Feature transforms, automated selection and PCA have been removed for a simplified workflow.")
-
+ 
         # 2D Visualization
         st.write("**2D Feature Relationships**")
         if n_features >= 2:
